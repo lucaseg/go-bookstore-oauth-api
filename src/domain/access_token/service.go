@@ -24,8 +24,7 @@ func NewService(repo Repository) Service {
 
 func (s *service) GetById(key string) (*AccessToken, *errors.RestError) {
 	if key == "" {
-		// TODO: traer los errores
-		return nil, &errors.RestError{}
+		return nil, errors.BadRequest("The key can not be empty")
 	}
 
 	accessToken, err := s.repository.GetById(key)
