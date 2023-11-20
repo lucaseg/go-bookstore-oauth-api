@@ -22,6 +22,16 @@ func NewService(repo Repository) Service {
 	}
 }
 
-func (s *service) GetById(string) (*AccessToken, *errors.RestError) {
-	return nil, nil
+func (s *service) GetById(key string) (*AccessToken, *errors.RestError) {
+	if key == "" {
+		// TODO: traer los errores
+		return nil, &errors.RestError{}
+	}
+
+	accessToken, err := s.repository.GetById(key)
+	if err != nil {
+		return nil, err
+	}
+
+	return accessToken, nil
 }

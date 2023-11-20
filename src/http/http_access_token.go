@@ -16,7 +16,12 @@ type accessTokenHandler struct {
 }
 
 func (h *accessTokenHandler) GetById(c *gin.Context) {
-	c.JSON(http.StatusFailedDependency, "implement me")
+	key := c.Param("key")
+	accessToken, err := h.service.GetById(key)
+	if err != nil {
+		c.JSON(err.Status, err)
+	}
+	c.JSON(http.StatusOK, accessToken)
 }
 
 func NewAccessTokenHandler(service access_token.Service) AccessTokenHandler {
