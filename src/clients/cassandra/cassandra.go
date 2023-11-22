@@ -2,20 +2,7 @@ package cassandra
 
 import (
 	"github.com/gocql/gocql"
-	"github.com/lucaseg/go-bookstore-oauth-api/src/domain/access_token"
-	"github.com/lucaseg/go-bookstore-oauth-api/src/utils/errors"
 )
-
-type client struct {
-}
-
-func NewClient() *client {
-	return &client{}
-}
-
-func (c *client) GetById(id string) (*access_token.AccessToken, *errors.RestError) {
-	return nil, nil
-}
 
 var (
 	cluster *gocql.ClusterConfig

@@ -12,9 +12,9 @@ func TestConstantsAccessToken(t *testing.T) {
 
 func TestGetNewAccessToken(t *testing.T) {
 	at := GetNewAccessToken()
-	assert.True(t, at.Client == 0, "The new access token should have client 0")
+	assert.True(t, at.ClientId == 0, "The new access token should have client 0")
 	assert.True(t, at.UserId == 0, "The user id should be 0")
-	assert.True(t, at.AccessToken == "", "Should be empty access token")
+	assert.True(t, at.Token == "", "Should be empty access token")
 }
 
 func TestExpirationTime(t *testing.T) {
