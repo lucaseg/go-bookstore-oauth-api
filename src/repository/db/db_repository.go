@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	queryGetAccessTocken    = "SELECT access_tocken, user_id, client_id, expires FROM access_tokens WHERE access_token=?;"
-	queryCreateAccessTocken = "INSERT INTO access_tokens(access_token, user_id, client_id, expires) VALUES (?, ?, ?, ?);"
-	quertUpdateAccessTocken = "UPDATE access_tokens SET expires=? WHERE acess_token=?"
+	queryGetAccessToken    = "SELECT access_token, user_id, client_id, expires FROM oauth.access_tokens WHERE access_token=?;"
+	queryCreateAccessToken = "INSERT INTO oauth.access_tokens(access_token, user_id, client_id, expires) VALUES (?, ?, ?, ?);"
+	queryUpdateAccessToken = "UPDATE oauth.access_tokens SET expires=? WHERE access_token=?"
 )
 
 type dbRepository struct {
@@ -29,7 +29,7 @@ func (db *dbRepository) GetById(id string) (*at.AccessToken, *errors.RestError) 
 	defer session.Close()
 
 	var result at.AccessToken
-	if err := session.Query(queryGetAccessTocken, id).Scan(
+	if err := session.Query(queryGetAccessToken, id).Scan(
 		&result.Token,
 		&result.UserId,
 		&result.ClientId,
@@ -40,7 +40,7 @@ func (db *dbRepository) GetById(id string) (*at.AccessToken, *errors.RestError) 
 		return nil, errors.InteralServerError(err.Error())
 	}
 
-	return nil, nil
+	return &result, nil
 }
 
 func (db *dbRepository) Create(at *at.AccessToken) *errors.RestError {
@@ -51,7 +51,7 @@ func (db *dbRepository) Create(at *at.AccessToken) *errors.RestError {
 	}
 	defer session.Close()
 
-	if err := session.Query(queryCreateAccessTocken,
+	if err := session.Query(queryCreateAccessToken,
 		at.Token,
 		at.UserId,
 		at.ClientId,
@@ -70,7 +70,7 @@ func (db *dbRepository) UpdateExpirationTime(at *at.AccessToken) *errors.RestErr
 	}
 	defer session.Close()
 
-	if err := session.Query(quertUpdateAccessTocken,
+	if err := session.Query(queryUpdateAccessToken,
 		at.Token,
 		at.UserId,
 		at.ClientId,

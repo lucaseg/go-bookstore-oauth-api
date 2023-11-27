@@ -18,5 +18,11 @@ func StartApplication() {
 	accessTokenHandler := http.NewAccessTokenHandler(service)
 
 	router.GET("/oauth/access-token/:access-token-id", accessTokenHandler.GetById)
-	router.Run()
+	router.POST("oauth/access-token", accessTokenHandler.Create)
+	router.POST("oauth/access-token/:access-token-id", accessTokenHandler.Update)
+
+	err := router.Run()
+	if err != nil {
+		panic(err)
+	}
 }
