@@ -30,7 +30,7 @@ func (db *dbRepository) GetById(id string) (*at.AccessToken, *errors.RestError) 
 
 	var result at.AccessToken
 	if err := session.Query(queryGetAccessToken, id).Scan(
-		&result.Token,
+		&result.AccessToken,
 		&result.UserId,
 		&result.ClientId,
 		&result.Expires); err != nil {
@@ -52,7 +52,7 @@ func (db *dbRepository) Create(at *at.AccessToken) *errors.RestError {
 	defer session.Close()
 
 	if err := session.Query(queryCreateAccessToken,
-		at.Token,
+		at.AccessToken,
 		at.UserId,
 		at.ClientId,
 		at.Expires,
@@ -71,7 +71,7 @@ func (db *dbRepository) UpdateExpirationTime(at *at.AccessToken) *errors.RestErr
 	defer session.Close()
 
 	if err := session.Query(queryUpdateAccessToken,
-		at.Token,
+		at.AccessToken,
 		at.UserId,
 		at.ClientId,
 		at.Expires,

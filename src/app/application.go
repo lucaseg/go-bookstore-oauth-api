@@ -5,6 +5,7 @@ import (
 	"github.com/lucaseg/go-bookstore-oauth-api/src/domain/access_token"
 	"github.com/lucaseg/go-bookstore-oauth-api/src/http"
 	"github.com/lucaseg/go-bookstore-oauth-api/src/repository/db"
+	"github.com/lucaseg/go-bookstore-oauth-api/src/repository/rest"
 )
 
 var (
@@ -14,12 +15,13 @@ var (
 func StartApplication() {
 	atRepository := db.New()
 	//cassandraClient := cassandra.NewClient()
-	service := access_token.NewService(atRepository)
+	userRepository := rest.NewUserRestRepository()
+	service := access_token.NewService(atRepository, userRepository)
 	accessTokenHandler := http.NewAccessTokenHandler(service)
 
 	router.GET("/oauth/access-token/:access-token-id", accessTokenHandler.GetById)
-	router.POST("oauth/access-token", accessTokenHandler.Create)
-	router.POST("oauth/access-token/:access-token-id", accessTokenHandler.Update)
+	router.POST("/oauth/access-token", accessTokenHandler.Create)
+	router.POST("/oauth/access-token/:access-token-id", accessTokenHandler.Update)
 
 	err := router.Run()
 	if err != nil {

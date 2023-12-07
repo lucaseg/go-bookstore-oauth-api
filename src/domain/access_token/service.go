@@ -1,6 +1,7 @@
 package access_token
 
 import (
+	"github.com/lucaseg/go-bookstore-oauth-api/src/repository/rest"
 	"github.com/lucaseg/go-bookstore-oauth-api/src/utils/errors"
 )
 
@@ -12,17 +13,19 @@ type Repository interface {
 
 type Service interface {
 	GetById(string) (*AccessToken, *errors.RestError)
-	Create(*AccessToken) *errors.RestError
+	Create(*AccessTokenRequest) (*AccessToken, *errors.RestError)
 	UpdateExpirationTime(*AccessToken) *errors.RestError
 }
 
 type service struct {
-	repository Repository
+	repository     Repository
+	userRepository rest.UserRestRepository
 }
 
-func NewService(repo Repository) Service {
+func NewService(repo Repository, userRepository rest.UserRestRepository) Service {
 	return &service{
-		repository: repo,
+		repository:     repo,
+		userRepository: userRepository,
 	}
 }
 
@@ -39,20 +42,26 @@ func (s *service) GetById(key string) (*AccessToken, *errors.RestError) {
 	return accessToken, nil
 }
 
-func (s *service) Create(at *AccessToken) *errors.RestError {
+func (s *service) Create(at *AccessTokenRequest) (*AccessToken, *errors.RestError) {
 	if err := at.Validate(); err != nil {
-		return err
+		return nil, err
 	}
 
-	newAccessToken := GetNewAccessToken()
-	newAccessToken.Token = at.Token
-	newAccessToken.UserId = at.UserId
-	newAccessToken.ClientId = at.ClientId
-
-	if err := s.repository.Create(at); err != nil {
-		return err
+	// Login user using users service api
+	user, err := s.userRepository.Login(at.Email, at.Password)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+
+	// if login was success we will create the access token
+	newAccessToken := GetNewAccessToken(at.GrantType, user.Id)
+	newAccessToken.Generate()
+
+	if err := s.repository.Create(newAccessToken); err != nil {
+		return nil, err
+	}
+
+	return newAccessToken, nil
 }
 
 func (s *service) UpdateExpirationTime(at *AccessToken) *errors.RestError {
