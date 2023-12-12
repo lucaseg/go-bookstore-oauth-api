@@ -31,3 +31,11 @@ func InteralServerError(message string) *RestError {
 		"internal_server_error",
 	}
 }
+
+func FailedDependency(message string) *RestError {
+	return &RestError{
+		http.StatusFailedDependency,
+		message,
+		"failed_dependency",
+	}
+}
